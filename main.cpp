@@ -1,4 +1,33 @@
 //Author: Frederick Alvarez
+#include<string>
+#include<iostream>
+#include<vector>
+#include"bitmap.h"
+
+using namespace std;
+//function prototypes
+bool samesize(Bitmap,Bitmap)
+int colsize(Bitmap)
+int rowsize(Bitmap)
+
+
+int main(){
+return 0 
+}
+
+//function definitions
+int colsize(Bitmap bitmap)
+{
+    vector< vector<Pixel> > pixelMatrix = bitmap.toPixelMatrix();
+    return pixelmatrix[0].size();
+}
+int rowsize(Bitmap bitmap)
+{
+    vector< vector<Pixel> > pixelMatrix = bitmap.toPixelMatrix();
+    return pixelmatrix.size();
+}
+
+
 //1.) A do while loop which has a boolean condition so it repeats until the correct amount of files or correct format have been entered, or the input is done. This loop will also check the size of the first image as reference for the following images. These images will be checked by a function called samesize.
 
 //samesize takes the first Bitmap and the currently entered bitmap and checks if they are the same size using colsize and rowsize. Prints an error if they are not the same size
