@@ -9,32 +9,71 @@ using namespace std;
 bool sameSize(Bitmap, Bitmap);
 int colSize(Bitmap);
 int rowSize(Bitmap);
-Bitmap picture1;
-Bitmap picture2;
-bool tester;
+bool validFile(string);
 //variable declaration
-string filename1,filename2;
-int height, width;
+vector<string> fileVector;
+Bitmap picture1, picture2;
+bool tester;
+bool rightSize = false;
+string filename,filename1;
+int height, width,size;
 int main()
 {
     cout<<"Enter the name of 2 files."<<endl;
     cin>>filename1;
-    cin>>filename2;
-    picture1.open(filename1);
-    picture2.open(filename2);
-    tester = sameSize(picture1,picture2);
+    tester = validFile(filename1);
     if(tester ==true)
         {
-        cout<<"same size!"<<endl;
+        cout<<"cool."<<endl;
+        fileVector.push_back(filename1);
+        cout<<fileVector.size()<<endl;
         }
     else
         {
-        cout<<"not same size! :("<<endl;
+        cout<<"invalid file, try again"<<endl;
+        };
+    do
+        {
+        bool tester1,tester2;
+        cin>>filename;
+        tester1 = validFile(filename);
+        if(tester1 == true)
+            {
+            picture1.open(filename1);
+            picture2.open(filename);
+            tester2 = sameSize(picture1,picture2);
+            if(tester2==true)
+                {
+                fileVector.push_back(filename);
+                cout<<fileVector.size()<<endl;
+                }
+            else
+                {
+                cout<<"These pictures are not the same size"<<endl;
+                }
+            }   
+        else
+            {
+            cout<<"invalid File"<<endl;
+            }
+        size = fileVector.size();
+        cout<<"size is: "<<size<<endl;
         }
+    while(fileVector.size()<=9 || filename != "Done");
+    cout<<"You have finished this loop successfully"<<endl;
 return 0; 
 }
 
 //function definitions
+bool validFile(string file)
+{
+    bool valid;
+    Bitmap pic;
+    pic.open(file);
+    valid = pic.isImage();
+    return valid;
+}
+
 bool sameSize(Bitmap file1,Bitmap file2)
 {
         int width1 = colSize(file1);
@@ -65,13 +104,13 @@ int colSize(Bitmap bitmap)
 
 //1.) A do while loop which has a boolean condition so it repeats until the correct amount of files or correct format have been entered, or the input is done. This loop will also check the size of the first image as reference for the following images. These images will be checked by a function called samesize.
 
-//samesize takes the first Bitmap and the currently entered bitmap and checks if they are the same size using colsize and rowsize. Prints an error if they are not the same size
-//bool samesize(Bitmap, Bitmap)
 
-//colsize converts the Bitmap to a pixel matrix and returns its column size.
-//int colsize(Bitmap)
-//rowsize converts the Bitmap to a pixel matrix and returns its row size.
-//int rowsize(Bitmap)
+
+
+
+
+
+
 
 
     //a.) inside this loop, have an if statement which, if the format and size of the entered file is correct, adds 1 to the count of correctly entered files.
