@@ -12,7 +12,6 @@ int colSize(Bitmap);
 int rowSize(Bitmap);
 bool validFile(string);
 vector <vector <Pixel> > compositor(vector <string>);
-
 void averager(vector <vector <Pixel> > &,int);
 
 //variable declaration
@@ -75,7 +74,7 @@ int main()
 
             }  
         }
-        //Condition is when the file Vector excedes the maximum amount of files.
+        //Condition is when the length of the file Vector meets the maximum amount of files.
         else
         {
             cout<<"The maximum amount of Images has been loaded. Composition Initialized."<<endl;
@@ -83,19 +82,21 @@ int main()
         }
     }
     vector< vector <Pixel> > compositeMatrix = compositor(fileVector);
-    averager(compositeMatrix,fileVector.size());
-    if(fileVector.size()>2)
+    if(fileVector.size()>=2)
     {
         picture.fromPixelMatrix(compositeMatrix);
         picture.save("composite-falvarez7.bmp");
     }
     else
     {
+         cout<<"Error: This program requires a minimum of two images in order to make a composite image. Program Terminated. "<<endl;
+
     }
 return 0; 
 }
 
 //function definitions
+//simply checks if the filename provided is a valid bitmap file.
 bool validFile(string file)
 {
     bool valid;
@@ -104,7 +105,7 @@ bool validFile(string file)
     valid = pic.isImage();
     return valid;
 }
-
+//checks if two entered filenames refer to two equal dimensioned bitmap and gives a booleon in return. 
 bool sameSize(string file1,string file2)
 {
         Bitmap bit1, bit2;
@@ -123,62 +124,52 @@ bool sameSize(string file1,string file2)
            return false;
            }
 }
+//Checks the row size of a given bitmap. For use in sameSize.
 int rowSize(Bitmap bitmap)
 {
     vector< vector<Pixel> > pixelMatrix = bitmap.toPixelMatrix();
     return pixelMatrix.size();
 }
-
+//Checks the column size of a given bitmap. For use in sameSize.
 int colSize(Bitmap bitmap)
 {
     vector< vector<Pixel> > pixelMatrix = bitmap.toPixelMatrix();
     return pixelMatrix[0].size();
 }
-
-
-//4.)Inside the continue loop, have the first image converted into a pixel matrix and set the variable composite matrix  equal to the first pixel matrix. After this initial conversion has occured, the rest of the bitmaps will be converted and averaged into the composite matrix in a function called Compositor within a for loop. This loop will also print out how many bitmaps have been converted. 
-
-//Compositor recieves the composite pixel matrix and one of the iterated Bitmaps. First it converts the iterated bitmap into a pixel matrix. It then averages the two pixel matrices and sets compMatrix equal to the new matrix(Why it's pass-by-reference).
+//Compositor recieves the string vector of file names and opens and sums all of the pixel rgb values for the bitmap files. Needs averager to average these values once completed.
 vector <vector <Pixel> > compositor(vector <string> fileVec )
 {
-    if(fileVec.size()<2)
-    {   vector< vector<Pixel> > emptyMatrix;
-        cout<<"Error: This program requires a minimum of two images in order to make a composite image. Program Terminated. "<<endl;
-        return emptyMatrix;
-    }
-    else
-    {
-        vector <vector <Pixel> > compMatrix;
-        vector <vector <Pixel> > tempMatrix;
-        Bitmap bitmap,iterBitmap;
-        bitmap.open(fileVec[0]);
-        Pixel dot1, dot2;
-        compMatrix = bitmap.toPixelMatrix();
+        vector <vector <Pixel> > sumMatrix;
+        vector <vector <Pixel> > iterMatrix;
+        Bitmap initBitmap,iterBitmap;
+        Pixel dot1,dot2;
+
+        initBitmap.open(fileVec[0]);
+        sumMatrix = initBitmap.toPixelMatrix();
         for(int i = 1;i<fileVec.size();i++)
         {
             iterBitmap.open(fileVec[i]);
-            tempMatrix = iterBitmap.toPixelMatrix();
-            for(int j = 0;j<compMatrix.size();j++)
+            iterMatrix = iterBitmap.toPixelMatrix();
+            for(int j = 0;j<sumMatrix.size();j++)
             {
-                for(int k = 0;k<compMatrix[j].size();k++)
+                for(int k = 0;k<sumMatrix[j].size();k++)
                 {
-                dot1 = compMatrix[j][k];
-                dot2 = tempMatrix[j][k];
+                dot1 = sumMatrix[j][k];
+                dot2 = iterMatrix[j][k];
                 dot1.red=dot1.red+dot2.red;
                 dot1.blue=dot1.blue+dot2.blue;
                 dot1.green=dot1.green+dot2.green;
-                compMatrix[j][k] = dot1;
+                sumMatrix[j][k] = dot1;
 
                 }
             }
         cout<<"Image "<<i+1<<" of "<<fileVec.size()<<" has been processed. "<<endl;
     
         }
-    
-        return compMatrix;
-    }
+        averager(sumMatrix,fileVec.size());
+        return sumMatrix;
 }
-//Make this one pass by reference once tested
+//averager simply takes each pixel in the sumMatrix and divides it by the number of bitmap files entered in order to get an average. It uses pass by reference. 
 void averager(vector <vector <Pixel> > & compMat,int size)
 {
     Pixel dot;
