@@ -11,84 +11,87 @@ bool sameSize(string, string);
 int colSize(Bitmap);
 int rowSize(Bitmap);
 bool validFile(string);
-vector <vector <Pixel> > compositor(vector <string> fileVec );
+vector <vector <Pixel> > compositor(vector <string>);
 
-void averager(vector <vector <Pixel> > & ,int);
+void averager(vector <vector <Pixel> > &,int);
 
 //variable declaration
 const int MAX_FILES = 10;
 vector<string> fileVector;
-bool tester;
+bool tester,tester1,tester2;
 string filename,filename1;
 int size;
 Bitmap picture;
 
 int main()
 {
-    cout<<"Enter the name of 2 files."<<endl;
+//Initial file entry, seperate in order to define a base image size. 
     do
     {
-    cin>>filename1;
-    tester = validFile(filename1);
-    if(tester ==true)
-        {
-        cout<<"cool."<<endl;
-        fileVector.push_back(filename1);
-        cout<<fileVector.size()<<endl;
-        }
-    else
-        {
-        cout<<"invalid file, try again"<<endl;
-        };
-    }
-    while(tester!=true);
-    while(fileVector.size()<MAX_FILES || filename != "Done")
-
-        {
-        bool tester1,tester2;
-        if(fileVector.size()<MAX_FILES)
-        {
-        cin>>filename;
-        if(filename=="Done")
+        cout<<"Enter up to 10 bitmap files or DONE when finished. "<<endl;
+        cin>>filename1;
+        tester = validFile(filename1);
+        if(tester ==true)
             {
-            break;
+            fileVector.push_back(filename1);
             }
-        else if(filename !="Done" && fileVector.size()<=MAX_FILES-1 )
-            {tester1 = validFile(filename);
-                if(tester1 == true)
-                    {
-                      tester2 = sameSize(filename,filename1);
-            if(tester2==true)
-                {
-                fileVector.push_back(filename);
-                cout<<fileVector.size()<<endl;
-                }
-            else
-                {
-                cout<<"These pictures are not the same size"<<endl;
-                }
-            }   
-         else
-            {
-            cout<<"invalid File"<<endl;
-            }
-
-         }
-         }
         else
             {
-        break;
-        }
-
-         size = fileVector.size();
-        cout<<"size is: "<<size<<endl;
+            cout<<"Error: Invalid file type or the file does not exist, try again."<<endl;
+            };
+    }
+    while(tester!=true);
+//File entry for the remaining files. 
+    while(fileVector.size()<MAX_FILES || filename != "DONE")
+    {
+        if(fileVector.size()<MAX_FILES)
+        {
+            cout<<"Enter another bitmap file or enter DONE when finished"<<endl;
+            cin>>filename;
+            if(filename=="DONE")
+            {
+                cout<<"DONE has been selected. Composition initialized."<<endl;
+                break;
             }
-        cout<<"You have finished this loop successfully"<<endl;
-        vector< vector <Pixel> > compositeMatrix = compositor(fileVector);
-        averager(compositeMatrix,fileVector.size());
+            else if(filename !="DONE" && fileVector.size()<MAX_FILES )
+            {
+                tester1 = validFile(filename);
+                if(tester1 == true)
+                {
+                    tester2 = sameSize(filename,filename1);
+                    if(tester2==true)
+                    {
+                        fileVector.push_back(filename);
+                    }
+                    else
+                    {
+                        cout<<"Error: Image files are not the same dimensions."<<endl;
+                    }
+                }   
+                else
+                {
+                    cout<<"Error: invalid file type or file does not exist"<<endl;
+                }
+
+            }  
+        }
+        //Condition is when the file Vector excedes the maximum amount of files.
+        else
+        {
+            cout<<"The maximum amount of Images has been loaded. Composition Initialized."<<endl;
+            break;
+        }
+    }
+    vector< vector <Pixel> > compositeMatrix = compositor(fileVector);
+    averager(compositeMatrix,fileVector.size());
+    if(fileVector.size()>2)
+    {
         picture.fromPixelMatrix(compositeMatrix);
-        picture.save("compositeImage.bmp");
-        cout<<"Good Job! I like what you got!"<< endl;
+        picture.save("composite-falvarez7.bmp");
+    }
+    else
+    {
+    }
 return 0; 
 }
 
@@ -138,33 +141,42 @@ int colSize(Bitmap bitmap)
 //Compositor recieves the composite pixel matrix and one of the iterated Bitmaps. First it converts the iterated bitmap into a pixel matrix. It then averages the two pixel matrices and sets compMatrix equal to the new matrix(Why it's pass-by-reference).
 vector <vector <Pixel> > compositor(vector <string> fileVec )
 {
-    vector <vector <Pixel> > compMatrix;
-    vector <vector <Pixel> > tempMatrix;
-    Bitmap bitmap,iterBitmap;
-    bitmap.open(fileVec[0]);
-    Pixel dot1, dot2;
-    compMatrix = bitmap.toPixelMatrix();
-    for(int i = 1;i<fileVec.size();i++)
-    {
-        iterBitmap.open(fileVec[i]);
-        tempMatrix = iterBitmap.toPixelMatrix();
-        for(int j = 0;j<compMatrix.size();j++)
-        {
-            for(int k = 0;k<compMatrix[j].size();k++)
-            {
-            dot1 = compMatrix[j][k];
-            dot2 = tempMatrix[j][k];
-            dot1.red=dot1.red+dot2.red;
-            dot1.blue=dot1.blue+dot2.blue;
-            dot1.green=dot1.green+dot2.green;
-            compMatrix[j][k] = dot1;
-
-
-            }
-        }
-    cout<<i+1<<" files have been processed. "<<endl;
+    if(fileVec.size()<2)
+    {   vector< vector<Pixel> > emptyMatrix;
+        cout<<"Error: This program requires a minimum of two images in order to make a composite image. Program Terminated. "<<endl;
+        return emptyMatrix;
     }
-    return compMatrix;
+    else
+    {
+        vector <vector <Pixel> > compMatrix;
+        vector <vector <Pixel> > tempMatrix;
+        Bitmap bitmap,iterBitmap;
+        bitmap.open(fileVec[0]);
+        Pixel dot1, dot2;
+        compMatrix = bitmap.toPixelMatrix();
+        for(int i = 1;i<fileVec.size();i++)
+        {
+            iterBitmap.open(fileVec[i]);
+            tempMatrix = iterBitmap.toPixelMatrix();
+            for(int j = 0;j<compMatrix.size();j++)
+            {
+                for(int k = 0;k<compMatrix[j].size();k++)
+                {
+                dot1 = compMatrix[j][k];
+                dot2 = tempMatrix[j][k];
+                dot1.red=dot1.red+dot2.red;
+                dot1.blue=dot1.blue+dot2.blue;
+                dot1.green=dot1.green+dot2.green;
+                compMatrix[j][k] = dot1;
+
+                }
+            }
+        cout<<"Image "<<i+1<<" of "<<fileVec.size()<<" has been processed. "<<endl;
+    
+        }
+    
+        return compMatrix;
+    }
 }
 //Make this one pass by reference once tested
 void averager(vector <vector <Pixel> > & compMat,int size)
