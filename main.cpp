@@ -13,7 +13,7 @@ int rowSize(Bitmap);
 bool validFile(string);
 vector <vector <Pixel> > compositor(vector <string> fileVec );
 
-vector <vector <Pixel> > averager(vector <vector <Pixel> >,int);
+void averager(vector <vector <Pixel> > & ,int);
 
 //variable declaration
 const int MAX_FILES = 10;
@@ -84,7 +84,8 @@ int main()
         cout<<"size is: "<<size<<endl;
             }
         cout<<"You have finished this loop successfully"<<endl;
-        vector< vector <Pixel> > compositeMatrix = averager(compositor(fileVector),fileVector.size()); 
+        vector< vector <Pixel> > compositeMatrix = compositor(fileVector);
+        averager(compositeMatrix,fileVector.size());
         picture.fromPixelMatrix(compositeMatrix);
         picture.save("compositeImage.bmp");
         cout<<"Good Job! I like what you got!"<< endl;
@@ -166,7 +167,7 @@ vector <vector <Pixel> > compositor(vector <string> fileVec )
     return compMatrix;
 }
 //Make this one pass by reference once tested
-vector <vector <Pixel> > averager(vector <vector <Pixel> > compMat,int size)
+void averager(vector <vector <Pixel> > & compMat,int size)
 {
     Pixel dot;
     for(int i = 0;i<compMat.size();i++)
@@ -181,7 +182,6 @@ vector <vector <Pixel> > averager(vector <vector <Pixel> > compMat,int size)
 
         }
     }
-    return compMat;
 }
 
 
